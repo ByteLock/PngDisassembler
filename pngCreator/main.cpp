@@ -3,7 +3,7 @@
 #include <string>
 #include "./headers/generate.h"
 #include "./headers/extract.h"
-#include "./external/base64/base64.h"
+#include "./headers/base64.h"
 
 /**
  * @brief Read a PNG
@@ -70,10 +70,9 @@ int main() {
     printf("\nbit depth: %d\n", returned.bit_depth);
 
     // zero the bits
-    // for(int i = 0; i < sizeof(idhrBuffer); i++) {
-    //     *((char *) &idhrBuffer[i]) = *((char *)&idhrBuffer[i]) & ~idhrBuffer[i];
-    // }
-    &idhrBuffer = &idhrBuffer & ~*((char *)idhrBuffer);
+    for(int i = 0; i < sizeof(idhrBuffer); i++) {
+        *((char *) &idhrBuffer[i]) = *((char *)&idhrBuffer[i]) & ~idhrBuffer[i];
+    }
 
     printf("\nIhdr Buffer Returned: ");
     for(int i = 0; i < sizeof(idhrBuffer); i++) {
