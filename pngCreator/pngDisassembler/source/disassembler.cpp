@@ -38,28 +38,30 @@ int disassemble(const char file[], char * fileBuffer) {
     _FileSig fileSignature;
     f.read((char *)&fileSignature, sizeof(_FileSig));
     printf("read sig: ");
-    for(auto c : fileSignature.signature) {
-        printf("%d ", c);
+    for(int i = 0; i < sizeof(fileSignature.signature); i++) {
+        printf("%d ", fileSignature.signature[i]);
     }
     printf("\n");
+    
 
     std::vector<std::vector<char>  > chunks;
+    printf("------------------------------\n");
     while (!(f.tellg() == fileSize))
     {
-        std::vector<char> byteVector;
         _Chunk chunk;
+        std::vector<char> byteVector;
         f.read((char *)&chunk, sizeof(chunk));
         int chunkSize = ntohl(chunk.length);
         printf("Chunk Length: %d\n", chunkSize);
         printf("Chunk Type: %s\n", chunk.type);
         unsigned char buffer[chunkSize + 4];
         f.read((char *)&buffer, chunkSize + 4);
-        for(auto c : buffer) {
-            byteVector.push_back(c);
+        for(int i = 0; i < sizeof(buffer); i++) {
+            byteVector.push_back(buffer[i]);
         }
         chunks.push_back(byteVector);
         printf("------------------------------\n");
     }
-    printf("v size %lu", sizeof(chunks));
+    printf("chunk vectors size %lu\n", sizeof(chunks));
     return 1;
 }
