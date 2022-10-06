@@ -43,18 +43,23 @@ int disassemble(const char file[], char * fileBuffer) {
     }
     printf("\n");
 
-    std::vector<unsigned char[]> chunks;
+    std::vector<std::vector<char>  > chunks;
     while (!(f.tellg() == fileSize))
     {
+        std::vector<char> byteVector;
         _Chunk chunk;
         f.read((char *)&chunk, sizeof(chunk));
         int chunkSize = ntohl(chunk.length);
         printf("Chunk Length: %d\n", chunkSize);
         printf("Chunk Type: %s\n", chunk.type);
-        unsigned char buffer[chunkSize];
-        f.read((char *)&buffer, chunkSize);
-        chunks.push_back(buffer);
-        return 1;
+        unsigned char buffer[chunkSize + 4];
+        f.read((char *)&buffer, chunkSize + 4);
+        for(auto c : buffer) {
+            byteVector.push_back(c);
+        }
+        chunks.push_back(byteVector);
+        printf("------------------------------\n");
     }
-
+    printf("v size %lu", sizeof(chunks));
+    return 1;
 }

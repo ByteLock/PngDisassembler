@@ -7,7 +7,7 @@
  */
 struct _Chunk {
     unsigned int length;
-    char type[5];
+    char type[4];
 };
 
 /**
