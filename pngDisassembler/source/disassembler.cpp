@@ -43,25 +43,45 @@ int disassemble(const char file[], char * fileBuffer) {
     }
     printf("\n");
     
-
+    // Create a vectr that takes vector<char>s
     std::vector<std::vector<char>  > chunks;
+    int z = 0;
     printf("------------------------------\n");
+
+    // Read the file until we reach the end
     while (!(f.tellg() == fileSize))
-    {
+    {   
+        // The data chunk (found in headers/structs.h)
         _Chunk chunk;
-        std::vector<char> byteVector;
+        
+        // The data vector that contains the data bytes of the current chunk
+        std::vector<char> data;
+
+        // Read the data chunk
         f.read((char *)&chunk, sizeof(chunk));
+
+        // Go from reverse byte order to host byte order (png files have the bytes written in reverse)
         int chunkSize = ntohl(chunk.length);
+
+        // Print outputs
         printf("Chunk Length: %d\n", chunkSize);
         printf("Chunk Type: %s\n", chunk.type);
+
+        // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
         unsigned char buffer[chunkSize + 4];
+
+        // Read the bytes to the buffer, then append them to the data vector
         f.read((char *)&buffer, chunkSize + 4);
         for(int i = 0; i < sizeof(buffer); i++) {
-            byteVector.push_back(buffer[i]);
+            data.push_back(buffer[i]);
         }
-        chunks.push_back(byteVector);
+
+        // Push the data vector to the chunk vector
+        chunks.push_back(data);
         printf("------------------------------\n");
+        z++;
     }
     printf("chunk vectors size %lu\n", sizeof(chunks));
+    printf("total chunks read: %d\n", z);
     return 1;
 }
