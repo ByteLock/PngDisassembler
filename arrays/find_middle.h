@@ -1,1 +1,0 @@
-int find(int arr[]);
