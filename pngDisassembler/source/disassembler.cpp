@@ -57,6 +57,8 @@ int disassemble(const char file[], char * fileBuffer) {
         // The data vector that contains the data bytes of the current chunk
         std::vector<char> data;
 
+        printf("Chunk Read Position: %d\n", (int)f.tellg());
+        
         // Read the data chunk
         f.read((char *)&chunk, sizeof(chunk));
 
@@ -69,15 +71,18 @@ int disassemble(const char file[], char * fileBuffer) {
 
         // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
         unsigned char buffer[chunkSize + 4];
-
+        
         // Read the bytes to the buffer, then append them to the data vector
         f.read((char *)&buffer, chunkSize + 4);
         for(int i = 0; i < sizeof(buffer); i++) {
             data.push_back(buffer[i]);
         }
+        // char * heap = (char *)malloc(chunkSize + 4); 
+        // printf("Heap address: %x\n", &heap);
 
         // Push the data vector to the chunk vector
         chunks.push_back(data);
+        printf("Chunk Read Position: %d\n", (int)f.tellg());
         printf("------------------------------\n");
         z++;
     }
