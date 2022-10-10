@@ -80,7 +80,7 @@ int disassemble(const char file[], char * fileBuffer) {
         
         if(chunkSize != 0 && chunkSize > 10) {
             for(int i = 0; i < 10; i++) {
-            printf("%u ", &heap_ptr[i]);
+            printf("%x ", &heap_ptr[i]);
             }
         }
         printf("\n");
