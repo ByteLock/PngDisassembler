@@ -41,23 +41,19 @@ int disassemble(const char file[], char * fileBuffer) {
     for(int i = 0; i < sizeof(fileSignature.signature); i++) {
         printf("%d ", fileSignature.signature[i]);
     }
-    printf("\n");
+    printf("\ntotal Size: %d\n", fileSize);
     
     // Create a vectr that takes vector<char>s
     std::vector<std::vector<char>  > chunks;
     int z = 0;
     printf("------------------------------\n");
-
     // Read the file until we reach the end
     while (!(f.tellg() == fileSize))
     {   
         // The data chunk (found in headers/structs.h)
         _Chunk chunk;
-        
-        // The data vector that contains the data bytes of the current chunk
-        std::vector<char> data;
 
-        printf("Chunk Read Position: %d\n", (int)f.tellg());
+        printf("chunk read position: %d\n", (int)f.tellg());
         
         // Read the data chunk
         f.read((char *)&chunk, sizeof(chunk));
@@ -66,23 +62,43 @@ int disassemble(const char file[], char * fileBuffer) {
         int chunkSize = ntohl(chunk.length);
 
         // Print outputs
-        printf("Chunk Length: %d\n", chunkSize);
-        printf("Chunk Type: %s\n", chunk.type);
+        printf("chunk Size: %d\n", chunkSize);
+        printf("chunk Type: %s\n", chunk.type);
 
         // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
-        unsigned char buffer[chunkSize + 4];
+        // char * buffer[chunkSize + 4];
+        char * heap_ptr = nullptr;
+        if(chunkSize + 4 != 4) {
+            printf("allocating memory page..\n");
+            heap_ptr = (char *)malloc(chunkSize + 4); 
+            printf("done.. ");
+        }
+        printf("str cmp val: %d\n", strcmp(chunk.type, "tEXt"));
+        printf("first 10 bytes: ");
+        char x[1];
+        std::cin >> x;
+        
+        if(chunkSize != 0 && chunkSize > 10) {
+            for(int i = 0; i < 10; i++) {
+            printf("%u ", &heap_ptr[i]);
+            }
+        }
+        printf("\n");
+        
+        
+        printf("heap address: %x\n", &heap_ptr);
         
         // Read the bytes to the buffer, then append them to the data vector
-        f.read((char *)&buffer, chunkSize + 4);
-        for(int i = 0; i < sizeof(buffer); i++) {
-            data.push_back(buffer[i]);
-        }
-        // char * heap = (char *)malloc(chunkSize + 4); 
-        // printf("Heap address: %x\n", &heap);
-
+        printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
+        printf("reading chunk...\n");
+        f.read((char *)heap_ptr, chunkSize + 4);
+        // for(int i = 0; i < sizeof(heap_ptr); i++) {
+        //     data.push_back(heap_ptr[i]);
+        // }
+        printf("done!\n");
         // Push the data vector to the chunk vector
-        chunks.push_back(data);
-        printf("Chunk Read Position: %d\n", (int)f.tellg());
+        //chunks.push_back(data);
+        printf("chunk read position: %d\n", (int)f.tellg());
         printf("------------------------------\n");
         z++;
     }
