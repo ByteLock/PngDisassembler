@@ -38,3 +38,19 @@ struct _IHDR {
     char filter_method;
     char interlace_method;
 };  
+
+/**
+* @brief Color Type Rules
+* Color: 0 | Allowed Bit Depths: 1, 2, 4, 8, 16
+* Color: 2 | Allowed Bit Depths: 8, 16
+* Color: 3 | Allowed Bit Depths: 1, 2, 4, 8
+* Color: 4 | Allowed Bit Depths: 8, 16
+* Color: 6 | Allowed Bit Depths: 8, 16
+*/
+int COLOR_TYPE_RULES[5][6] = {
+        {0, 1, 2, 4, 8, 16},
+        {2, 8, 16},
+        {3, 1, 2, 4, 8},
+        {4, 8, 16},
+        {6, 8, 16}
+};

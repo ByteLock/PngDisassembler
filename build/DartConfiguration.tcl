@@ -14,7 +14,7 @@ CostDataFile:
 Site: cyclades.local
 
 # Build name is osname-revision-compiler, i.e. Linux-2.4.2-2smp-c++
-BuildName: Darwin-c++
+BuildName: Darwin-clang++
 
 # Subprojects
 LabelsForSubprojects: 
@@ -63,7 +63,7 @@ UpdateOptions:
 UpdateType: 
 
 # Compiler info
-Compiler: /Library/Developer/CommandLineTools/usr/bin/c++
+Compiler: /usr/bin/clang++
 CompilerVersion: 14.0.0.14000029
 
 # Dynamic analysis (MemCheck)

@@ -19,6 +19,10 @@ void print_options() {
     printf("4. Exit\n");
 }
 
+/**
+ * @brief The function that disassembles a png and writes the
+ * shorthand to the console
+ */
 void handleBaseDisassemble() {
     printf("\x1b[23H\x1b[2J");
     printf("please enter the file name: \n");
@@ -33,6 +37,11 @@ void handleBaseDisassemble() {
     Disassembler::disassemble(ichars);
 }
 
+
+/**
+ * @brief The function that disassembles a png and writes the
+ * hex output of each chunk within the file
+ */
 void handleExtractDisassemble() {
     printf("\x1b[23H\x1b[2J");
     printf("please enter the file name: \n");
@@ -48,7 +57,7 @@ void handleExtractDisassemble() {
 }
 
 int main() {
-    while(true) {
+    while(1) {
         // Setup Display
         printf("\x1b[2H]\x1b[2J");
         print_header();

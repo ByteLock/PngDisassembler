@@ -73,15 +73,15 @@ CMakeFiles/disassembler.dir/main.cpp.o: CMakeFiles/disassembler.dir/flags.make
 CMakeFiles/disassembler.dir/main.cpp.o: /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp
 CMakeFiles/disassembler.dir/main.cpp.o: CMakeFiles/disassembler.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/dontssh/Documents/GitHub/PngProject/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/disassembler.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/disassembler.dir/main.cpp.o -MF CMakeFiles/disassembler.dir/main.cpp.o.d -o CMakeFiles/disassembler.dir/main.cpp.o -c /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/disassembler.dir/main.cpp.o -MF CMakeFiles/disassembler.dir/main.cpp.o.d -o CMakeFiles/disassembler.dir/main.cpp.o -c /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp
 
 CMakeFiles/disassembler.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/disassembler.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp > CMakeFiles/disassembler.dir/main.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp > CMakeFiles/disassembler.dir/main.cpp.i
 
 CMakeFiles/disassembler.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/disassembler.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp -o CMakeFiles/disassembler.dir/main.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp -o CMakeFiles/disassembler.dir/main.cpp.s
 
 # Object files for target disassembler
 disassembler_OBJECTS = \

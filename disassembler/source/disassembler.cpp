@@ -4,23 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace Disassembler {
-
-    /**
-     * @brief Color Type Rules
-     * Color: 0 | Allowed Bit Depths: 1, 2, 4, 8, 16
-     * Color: 2 | Allowed Bit Depths: 8, 16
-     * Color: 3 | Allowed Bit Depths: 1, 2, 4, 8
-     * Color: 4 | Allowed Bit Depths: 8, 16
-     * Color: 6 | Allowed Bit Depths: 8, 16
-     */
-    int COLOR_TYPE_RULES[5][6] = {
-        {0, 1, 2, 4, 8, 16},
-        {2, 8, 16},
-        {3, 1, 2, 4, 8},
-        {4, 8, 16},
-        {6, 8, 16}
-    };
+namespace Disassembler {    
 
     int disassemble(const char file[]) {
         std::ifstream f(file, std::ios::out | std::ios::binary);
@@ -67,24 +51,16 @@ namespace Disassembler {
             printf("chunk type: %s\n", chunk.type);
         
             if(chunkSize != 0) {
-                // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
-                // char * buffer[chunkSize + 4];
-                char * heap_ptr = nullptr;
-                if(chunkSize + 4 != 4) {
-                    printf("allocating memory page..\n");
-                    heap_ptr = (char *)malloc(chunkSize); 
-                    printf("done.. \n");
-                }
+                printf("allocating memory page..\n");
+                 char * heap_ptr = (char *)malloc(chunkSize); 
+                printf("done.. \n");
 
-                // Read the bytes to the buffer, then append them to the data vector
                 printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
                 printf("reading chunk...\n");
                 f.read((char *)heap_ptr, chunkSize);
                 printf("done!\n");
                 if(chunkSize < 100) {
                     printf("raw hex bytes: ");
-                    int x;
-                    std::cin >> x;
                     if(chunkSize != 0) {
                         for(int i = 0; i < chunkSize; i++) {
                             printf("%x ", heap_ptr[i]);
@@ -111,14 +87,22 @@ namespace Disassembler {
         return 1;
     }
     
+    /**
+     * @brief Disassembles and outputs a file
+     * 
+     * @param file the file (png) name
+     * @return the status code of the operation
+     */
     int disassemble_output(const char file[]) {
         // input file
         std::ifstream f(file, std::ios::out | std::ios::binary);
         
         // output file 
-        std::ofstream o("disassembled.txt", std::ios::out | std::ios::binary);
-        if(!f.is_open() || !f) {
-            printf("could not find file..\n");
+        std::ofstream o("disassembled.txt", std::ios::hex | std::ios::binary);
+
+        // Ensure that our files are open
+        if(!f.is_open() || !f && !o.is_open() || !o) {
+            printf("one or more files couldn't be find or created..\n");
             return 0;
         } else {
             printf("found file.. %s\n", file);
@@ -157,44 +141,53 @@ namespace Disassembler {
             // Print outputs
             printf("chunk size: %d\n", chunkSize);
             printf("chunk type: %s\n", chunk.type);
-        
-            if(chunkSize != 0) {
-                // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
-                // char * buffer[chunkSize + 4];
-                char * heap_ptr = nullptr;
-                if(chunkSize + 4 != 4) {
-                    printf("allocating memory page..\n");
-                    heap_ptr = (char *)malloc(chunkSize); 
-                    printf("done.. \n");
-                }
 
-                // Read the bytes to the buffer, then append them to the data vector
+            // We will only read the chunk size if it is not 0
+            if(chunkSize != 0) {
+                // Create a heap_ptr with the size of the chunk
+                printf("allocating memory page..\n");
+                char * heap_ptr = (char *)malloc(chunkSize); 
+                printf("done.. \n");
+
+                // Print out the heap address
+                printf("heap address: %x\n", &heap_ptr);
+
+                // Print out the projected read position after the bytes
                 printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
+
+                // Read the actual bytes from the input png file
                 printf("reading chunk...\n");
                 f.read((char *)heap_ptr, chunkSize);
+
+                // Write out the hex value to the output file
                 o.write(heap_ptr, chunkSize);
                 printf("done!\n");
+
+                // Print out the preview hex bytes (cannot be more than 100 bytes)
                 if(chunkSize < 100) {
                     printf("raw hex bytes: ");
-                    int x;
-                    std::cin >> x;
-                    if(chunkSize != 0) {
-                        for(int i = 0; i < chunkSize; i++) {
+                    for(int i = 0; i < chunkSize; i++) {
                             printf("%x ", heap_ptr[i]);
-                        }
-                    }           
+                    }          
                 }
                 printf("\n");
-                printf("heap address: %x\n", &heap_ptr);
             }
+
+            // Create a buffer for the crc outside of the chunk because EVERY chunk has a CRC besides the file signature
             char crc[4];
             printf("crc: ");
             for(int i = 0; i < sizeof(crc); i++) {
                 printf("%x ", crc[i]);
             }
             printf("\n");
+
+            // Read the last 4 bytes which are the CRC
             f.read((char *)&crc, sizeof(crc));
+
+            // Print out our current position
             printf("chunk read position: %d\n", (int)f.tellg());
+
+
             printf("------------------------------\n");
             o.write("\n------------------------------\n", 32);
             z++;
