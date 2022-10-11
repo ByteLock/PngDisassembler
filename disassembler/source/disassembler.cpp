@@ -18,7 +18,7 @@ namespace Disassembler {
         printf("current pos: %d\n", (int)f.tellg());
         // Determine file size
         f.seekg(0, f.end);
-        int fileSize = f.tellg();
+        int fileSize = f.tellg(); 
         f.seekg(0, f.beg);
 
         // Read file signature
