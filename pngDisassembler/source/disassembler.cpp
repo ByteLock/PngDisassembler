@@ -29,6 +29,7 @@ int disassemble(const char file[], char * fileBuffer) {
         printf("found file.. %s\n", file);
     }
 
+    printf("current pos: %d\n", (int)f.tellg());
     // Determine file size
     f.seekg(0, f.end);
     int fileSize = f.tellg();
@@ -43,8 +44,6 @@ int disassemble(const char file[], char * fileBuffer) {
     }
     printf("\ntotal Size: %d\n", fileSize);
     
-    // Create a vectr that takes vector<char>s
-    std::vector<std::vector<char>  > chunks;
     int z = 0;
     printf("------------------------------\n");
     // Read the file until we reach the end
@@ -62,47 +61,48 @@ int disassemble(const char file[], char * fileBuffer) {
         int chunkSize = ntohl(chunk.length);
 
         // Print outputs
-        printf("chunk Size: %d\n", chunkSize);
-        printf("chunk Type: %s\n", chunk.type);
-
-        // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
-        // char * buffer[chunkSize + 4];
-        char * heap_ptr = nullptr;
-        if(chunkSize + 4 != 4) {
-            printf("allocating memory page..\n");
-            heap_ptr = (char *)malloc(chunkSize + 4); 
-            printf("done.. ");
-        }
-        printf("str cmp val: %d\n", strcmp(chunk.type, "tEXt"));
-        printf("first 10 bytes: ");
-        char x[1];
-        std::cin >> x;
-        
-        if(chunkSize != 0 && chunkSize > 10) {
-            for(int i = 0; i < 10; i++) {
-            printf("%x ", &heap_ptr[i]);
+        printf("chunk size: %d\n", chunkSize);
+        printf("chunk type: %s\n", chunk.type);
+    
+        if(chunkSize != 0) {
+            // Create a new byte buffer with the chunkSize + 4 bytes (the size of the crc)
+            // char * buffer[chunkSize + 4];
+            char * heap_ptr = nullptr;
+            if(chunkSize + 4 != 4) {
+                printf("allocating memory page..\n");
+                heap_ptr = (char *)malloc(chunkSize); 
+                printf("done.. \n");
             }
+
+            // Read the bytes to the buffer, then append them to the data vector
+            printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
+            printf("reading chunk...\n");
+            f.read((char *)heap_ptr, chunkSize);
+            printf("done!\n");
+            if(chunkSize < 100) {
+                printf("raw hex bytes: ");
+                int x;
+                std::cin >> x;
+                if(chunkSize != 0) {
+                    for(int i = 0; i < chunkSize; i++) {
+                        printf("%x ", heap_ptr[i]);
+                    }
+                }           
+            }
+            printf("\n");
+            printf("heap address: %x\n", &heap_ptr);
+        }
+        char crc[4];
+        printf("crc: ");
+        for(int i = 0; i < sizeof(crc); i++) {
+            printf("%x ", crc[i]);
         }
         printf("\n");
-        
-        
-        printf("heap address: %x\n", &heap_ptr);
-        
-        // Read the bytes to the buffer, then append them to the data vector
-        printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
-        printf("reading chunk...\n");
-        f.read((char *)heap_ptr, chunkSize + 4);
-        // for(int i = 0; i < sizeof(heap_ptr); i++) {
-        //     data.push_back(heap_ptr[i]);
-        // }
-        printf("done!\n");
-        // Push the data vector to the chunk vector
-        //chunks.push_back(data);
+        f.read((char *)&crc, sizeof(crc));
         printf("chunk read position: %d\n", (int)f.tellg());
         printf("------------------------------\n");
         z++;
     }
-    printf("chunk vectors size %lu\n", sizeof(chunks));
     printf("total chunks read: %d\n", z);
     return 1;
 }

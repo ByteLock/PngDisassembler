@@ -2,7 +2,7 @@
 
 int main() {
     char buffer[256];
-    disassemble("damn.png", buffer);
+    disassemble("water.png", buffer);
 
     
 }
