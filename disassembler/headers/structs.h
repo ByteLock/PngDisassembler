@@ -19,6 +19,10 @@ struct _FileSig {
     unsigned char signature[8];
 };
 
+struct _CRC {
+    unsigned char crc[4];
+};
+
 /**
  * @brief The IHDR data chunk of a png file
  *  unsigned int width                  | Pixel width of an image

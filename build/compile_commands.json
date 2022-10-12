@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/Users/dontssh/Documents/GitHub/PngProject/build",
+  "command": "/usr/bin/clang++   -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk -o CMakeFiles/disassembler.dir/main.cpp.o -c /Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp",
+  "file": "/Users/dontssh/Documents/GitHub/PngProject/disassembler/main.cpp"
+}
+]
