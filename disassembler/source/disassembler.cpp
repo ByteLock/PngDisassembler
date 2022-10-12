@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <format>
 
 namespace Disassembler {    
 
@@ -98,7 +99,7 @@ namespace Disassembler {
         std::ifstream f(file, std::ios::out | std::ios::binary);
         
         // output file 
-        std::ofstream o("disassembled.txt", std::ios::hex | std::ios::binary);
+        std::ofstream o("disassembled.txt", std::ios::binary);
 
         // Ensure that our files are open
         if(!f.is_open() || !f && !o.is_open() || !o) {
@@ -122,7 +123,6 @@ namespace Disassembler {
             printf("%d ", fileSignature.signature[i]);
         }
         printf("\ntotal Size: %d\n", fileSize);
-        
         int z = 0;
         printf("------------------------------\n");
         // Read the file until we reach the end
@@ -140,7 +140,14 @@ namespace Disassembler {
 
             // Print outputs
             printf("chunk size: %d\n", chunkSize);
-            printf("chunk type: %s\n", chunk.type);
+            printf("chunk type: %s\n", chunk.type);     
+
+            char * ls = "\n------------------------------ ";
+            char * ldata = ("%s", chunk.type);
+            char * nl = "\n";
+            o.write(ls, 33);
+            o.write(ldata, sizeof(&ldata));
+            o.write(nl, sizeof(&nl));
 
             // We will only read the chunk size if it is not 0
             if(chunkSize != 0) {
@@ -158,10 +165,20 @@ namespace Disassembler {
                 // Read the actual bytes from the input png file
                 printf("reading chunk...\n");
                 f.read((char *)heap_ptr, chunkSize);
+                printf("done.. \n");
 
+                printf("writing memory page to output... \n");
                 // Write out the hex value to the output file
-                o.write(heap_ptr, chunkSize);
-                printf("done!\n");
+                o << " -> ";
+                for(int i = i; i < chunkSize; i++) {
+                    unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
+                    o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
+                    if(i % 10 == 0 && i != 0) {
+                        o.write(nl, sizeof(&nl));
+                        o << " -> ";
+                    }
+                }
+                printf("done.. \n");
 
                 // Print out the preview hex bytes (cannot be more than 100 bytes)
                 if(chunkSize < 100) {
@@ -171,7 +188,7 @@ namespace Disassembler {
                     }          
                 }
                 printf("\n");
-            }
+            }   
 
             // Create a buffer for the crc outside of the chunk because EVERY chunk has a CRC besides the file signature
             char crc[4];
@@ -186,12 +203,10 @@ namespace Disassembler {
 
             // Print out our current position
             printf("chunk read position: %d\n", (int)f.tellg());
-
-
             printf("------------------------------\n");
-            o.write("\n------------------------------\n", 32);
             z++;
         }
+        o.close();
         printf("total chunks read: %d\n", z);
         int x;
         std::cin >> x;
