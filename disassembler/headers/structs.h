@@ -54,3 +54,10 @@ int COLOR_TYPE_RULES[5][6] = {
         {4, 8, 16},
         {6, 8, 16}
 };
+
+/**
+ * @brief Output File Formatting Strings
+ * 
+ */
+char * ls = "\n------------------------------ ";
+char * nl = "\n";

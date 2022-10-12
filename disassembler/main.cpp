@@ -45,7 +45,7 @@ void handleBaseDisassemble() {
 void handleExtractDisassemble() {
     printf("\x1b[23H\x1b[2J");
     printf("please enter the file name: \n");
-    printf("(make sure it is in the same folder)\x1b[A\x1b[23;29H");
+    printf("make sure it is in the same folder)\x1b[A\x1b[23;29H");
     std::string input;
     std::cin >> input;
     printf("\n");

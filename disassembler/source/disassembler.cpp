@@ -7,6 +7,24 @@
 
 namespace Disassembler {    
 
+
+    void writeOutput(std::ofstream o, char * heap_ptr, int size) {
+        for(int i = i; i < size; i++) {
+            unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
+            o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
+            if(i % 10 == 0 && i != 0) {
+            o.write(nl, sizeof(&nl));
+                o << " -> ";
+            }
+        }
+    }
+
+    /**
+     * @brief Disassemble a PNG file and print out file specific information
+     * 
+     * @param file the file name
+     * @return the status code
+     */
     int disassemble(const char file[]) {
         std::ifstream f(file, std::ios::out | std::ios::binary);
         if(!f.is_open() || !f) {
@@ -89,10 +107,10 @@ namespace Disassembler {
     }
     
     /**
-     * @brief Disassembles and outputs a file
+     * @brief Disassembles and generates an output file
      * 
      * @param file the file (png) name
-     * @return the status code of the operation
+     * @return the status code 
      */
     int disassemble_output(const char file[]) {
         // input file
@@ -101,7 +119,6 @@ namespace Disassembler {
         // output file 
         std::ofstream o("disassembled.txt", std::ios::binary);
 
-        // Ensure that our files are open
         if(!f.is_open() || !f && !o.is_open() || !o) {
             printf("one or more files couldn't be find or created..\n");
             return 0;
@@ -109,42 +126,31 @@ namespace Disassembler {
             printf("found file.. %s\n", file);
         }
 
-        printf("current pos: %d\n", (int)f.tellg());
         // Determine file size
         f.seekg(0, f.end);
         int fileSize = f.tellg();
         f.seekg(0, f.beg);
 
         // Read file signature
-        _FileSig fileSignature;
-        f.read((char *)&fileSignature, sizeof(_FileSig));
-        printf("read sig: ");
-        for(int i = 0; i < sizeof(fileSignature.signature); i++) {
-            printf("%d ", fileSignature.signature[i]);
-        }
-        printf("\ntotal Size: %d\n", fileSize);
+        char * heap_ptr = (char *)malloc(sizeof(_FileSig));
+        f.read(heap_ptr, sizeof(_FileSig));
+        writeOutput(o, heap_ptr, sizeof(_FileSig));
+
         int z = 0;
         printf("------------------------------\n");
         // Read the file until we reach the end
         while (!(f.tellg() == fileSize))
         {   
-            // The data chunk (found in headers/structs.h)
             _Chunk chunk;
-
-            printf("chunk read position: %d\n", (int)f.tellg());
             
             // Read the data chunk
             f.read((char *)&chunk, sizeof(chunk));
             // Go from reverse byte order to host byte order (png files have the bytes written in reverse)
             int chunkSize = ntohl(chunk.length);
 
-            // Print outputs
-            printf("chunk size: %d\n", chunkSize);
-            printf("chunk type: %s\n", chunk.type);     
 
-            char * ls = "\n------------------------------ ";
+            // Output file formatting 
             char * ldata = ("%s", chunk.type);
-            char * nl = "\n";
             o.write(ls, 33);
             o.write(ldata, sizeof(&ldata));
             o.write(nl, sizeof(&nl));
@@ -153,14 +159,8 @@ namespace Disassembler {
             if(chunkSize != 0) {
                 // Create a heap_ptr with the size of the chunk
                 printf("allocating memory page..\n");
-                char * heap_ptr = (char *)malloc(chunkSize); 
+                heap_ptr = (char *)malloc(chunkSize); 
                 printf("done.. \n");
-
-                // Print out the heap address
-                printf("heap address: %x\n", &heap_ptr);
-
-                // Print out the projected read position after the bytes
-                printf("projected read position: %d\n", (int)f.tellg()+ chunkSize + 4);
 
                 // Read the actual bytes from the input png file
                 printf("reading chunk...\n");
@@ -179,26 +179,12 @@ namespace Disassembler {
                     }
                 }
                 printf("done.. \n");
-
-                // Print out the preview hex bytes (cannot be more than 100 bytes)
-                if(chunkSize < 100) {
-                    printf("raw hex bytes: ");
-                    for(int i = 0; i < chunkSize; i++) {
-                            printf("%x ", heap_ptr[i]);
-                    }          
-                }
-                printf("\n");
-            }   
+            } else {
+                printf("chunk has no data\n");
+            }
 
             // Create a buffer for the crc outside of the chunk because EVERY chunk has a CRC besides the file signature
             char crc[4];
-            printf("crc: ");
-            for(int i = 0; i < sizeof(crc); i++) {
-                printf("%x ", crc[i]);
-            }
-            printf("\n");
-
-            // Read the last 4 bytes which are the CRC
             f.read((char *)&crc, sizeof(crc));
 
             // Print out our current position
@@ -212,4 +198,5 @@ namespace Disassembler {
         std::cin >> x;
         return 1;
     }
+
 }
