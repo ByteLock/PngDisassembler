@@ -63,5 +63,5 @@ int COLOR_TYPE_RULES[5][6] = {
  * @brief Output File Formatting Strings
  * 
  */
-char * ls = "\n------------------------------ ";
+char * ls = "------------------------------ ";
 char * nl = "\n";

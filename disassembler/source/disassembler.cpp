@@ -12,12 +12,13 @@ namespace Disassembler {
 
     void writeOutput(char * heap_ptr, int size) {
         for(int i = 0; i < size; i++) {
-            unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
-            o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
-            if(i % 10 == 0 && i != 0) {
-            o.write(nl, sizeof(&nl));
-                o << " -> ";
-            }
+                unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
+                o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
+                printf("%d ", i);
+                if(i % 10 <= 0 && i != 0) {
+                    o.write(nl, 2);
+                    printf("\n");
+                }
         }
     }
 
@@ -133,10 +134,12 @@ namespace Disassembler {
         // Read file signature
         char * sig_ptr = (char *)malloc(sizeof(_FileSig));
         f.read(sig_ptr, sizeof(_FileSig));
-        o.write(ls, 33);
-        o << "File Signature\n";
+        o.write(ls, 32);
+        o << "File Signature";
+        o.write(nl, 2);
         writeOutput(sig_ptr, sizeof(_FileSig));
         free(sig_ptr);
+        o << "\n";
         
 
         int z = 0;
@@ -144,23 +147,27 @@ namespace Disassembler {
         // Read the file until we reach the end
         while (!(f.tellg() >= fileSize))
         {   
+            int x;
+            std::cin >> x;
             printf("current read pos: %d\n", (int)f.tellg());
             // create a chunk struct and memory page
             _Chunk chunk;
 
             // Read the next 8 bytes (hopefully the chunk header)
             f.read((char *)&chunk, sizeof(chunk));
+
             // go back the size of a chunk header
             f.seekg((int)f.tellg() - (sizeof(_Chunk)));
+
             // Go from reverse byte order to host byte order (png files have the bytes written in reverse)
             int chunkSize = ntohl(chunk.length);
-
             printf("data size: %d\n", chunkSize);
+
             // Output file formatting 
             char * ldata = ("%c", chunk.type);
-            o.write(ls, sizeof(ls));
-            o.write(ldata, sizeof(&ldata));
-            o.write(nl, sizeof(&nl));
+            o.write(ls, 32);
+            o.write(ldata, sizeof(ldata));
+            o.write(nl, 2);
 
             // Create a heap_ptr with the size of the chunk
             chunkSize = chunkSize + sizeof(_Chunk) + sizeof(_CRC);
@@ -169,18 +176,18 @@ namespace Disassembler {
 
             // Read the actual bytes from the input png file
             f.read((char *)heap_ptr, chunkSize);
-
             printf("writing memory page to output... \n");
+
             // Write out the hex value to the output file
-            o << " -> ";
-            for(int i = 0; i < chunkSize; i++) {
-                unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
-                o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
-                if(i % 10 == 0) {
-                    o.write(nl, sizeof(&nl));
-                    o << " -> ";
-                }
-            }
+            // for(int i = 0; i < chunkSize; i++) {
+            //     unsigned int hexch = (unsigned int)(unsigned char)heap_ptr[i];
+            //     o << std::setw(2) << std::setfill('0') << std::hex << hexch << " ";
+            //     if(i % 10 == 0) {
+            //         o.write(nl, 2);
+            //     }
+            // }
+            writeOutput(heap_ptr, chunkSize);
+            o << "\n";
             printf("done.. \n");
 
             // Print out our current position
@@ -188,8 +195,6 @@ namespace Disassembler {
             printf("------------------------------\n");
             z++;
             o.flush();
-            int x;
-            std::cin >> x;
         }
         o.close();
         printf("total chunks read: %d\n", z);
